@@ -14,12 +14,9 @@ const errorStackFormat = winston.format(info => {
 })
 
 const foramt = printf(info => {
-    return `${new Date().toJSON()} [${info.level}]: { 
-        message: ${info.message}, 
-        body: ${JSON.stringify(info.body)}, 
-        response: ${info.response}, 
-        stack:${info.stack}
-    }`;
+    return ` ${new Date().toJSON()} [${info.level}]: { message: ${info.message}, body: ${JSON.stringify(info.body)}, response: ${info.response}, }`;
+
+    //stack:${info.stack}
 });
 
 const logger = winston.createLogger({
@@ -31,7 +28,7 @@ const logger = winston.createLogger({
 });
 
 const formatf = printf(({ level, message, timestamp, ...metadata }) => {
-    let msg = ` 🖋  ${new Date().toJSON()} [${level}] : ${message} `;
+    let msg = ` ${new Date().toJSON()} [${level}] : ${message} `;
     if (metadata) {
         msg += JSON.stringify(metadata);
     }

@@ -1,86 +1,61 @@
-const { isEmpty } = require("lodash");
-const garbageService = require("../../../services/garbage.service");
-const collectionDateService = require("../../../services/collection-date.service");
+const garbageService = require("../service/garbage.service");
 
-const get = async (req, res) => {
+const get = async (req, res, next) => {
     try {
-        let response;
-        if (isEmpty(req.query))
-            response = await garbageService.get();
-        else
-            response = await garbageService.findBy(req.query);
-
+        console.log(req.query);
+        const response = await garbageService.get(req.qeury);
         res.json(response);
-    } catch (error) {
-        next(error)
-    }
-};
-
-const findOne = async (req, res) => {
-    try {
-        const garbage = await garbageService.findOne(req.params.id);
-        res.json(garbage);
-    } catch (error) {
-        next(error)
-    }
-};
-
-const create = async (req, res, next) => {
-    try {
-        const { color, type, location, collectedDate } = req.body;
-        const createdGarbage = await garbageService.create({
-            color,
-            type,
-            location,
-            collectedDate,
-            createdDate: new Date(),
-            updatedDate: new Date(),
-        });
-        res.json(createdGarbage);
     } catch (error) {
         next(error);
     }
 };
 
-const update = async (req, res) => {
+const findOne = async (req, res, next) => {
     try {
-        const { color, type, location, collectedDate } = req.body;
-        const updatedGarbage = await garbageService.update(req.params.id, {
-            color,
-            type,
-            location,
-            collectedDate,
-            updatedDate: new Date(),
-        });
-        res.json(updatedGarbage);
+        const garbage = await garbageService.findOne(req.params.id);
+        res.json(garbage);
     } catch (error) {
-        next(error)
+        next(error);
     }
 };
 
-const updateLocation = async (req, res) => {
+const create = async (req, res, next) => {
+    try {
+        const createdGarbage = await garbageService.create(req.body);
+        res.json(createdGarbage);
+    } catch (error) {
+        console.log(error);
+        next(error);
+    }
+};
+
+const update = async (req, res, next) => {
+    try {
+        const { color, type, location, collectedDate } = body;
+        const updatedGarbage = await garbageService.update(req.params.id, { color, type, location, collectedDate });
+        res.json(updatedGarbage);
+    } catch (error) {
+        next(error);
+    }
+};
+
+const updateLocation = async (req, res, next) => {
     try {
         const { location } = req.body;
-        const updatedGarbage = await garbageService.update(req.params.id, {
-            location,
-            updatedDate: new Date(),
-        });
+        const updatedGarbage = await garbageService.update(req.params.id, { location, updatedDate: new Date() });
         res.json(updatedGarbage);
     } catch (error) {
-        next(error)
+        next(error);
     }
 };
 
-const updateCollectedDate = async (req, res) => {
+const updateCollectedDate = async (req, res, next) => {
     try {
         const { collectedDate } = req.body;
-        const updatedGarbage = await garbageService.update(req.params.id, {
-            collectedDate,
-            updatedDate: new Date(),
-        });
+        const updatedGarbage = await garbageService.update(req.params.id, { collectedDate });
         res.json(updatedGarbage);
     } catch (error) {
-        next(error)
+        next(error);
     }
 };
 
@@ -89,24 +64,13 @@ const remove = async (req, res) => {
         const updatedGarbage = await garbageService.remove(req.params.id);
         res.json(updatedGarbage);
     } catch (error) {
-        next(error)
+        next(error);
     }
 };
 
 const collect = async (req, res, next) => {
     try {
-        const garbageId = req.params.id;
-        const names = ["Bob", "John", "Mark", "Sean"]; // mock data
-        await collectionDateService.create({
-            garbageId,
-            at: new Date(),
-            by: names[Math.floor(Math.random() * names.length)],
-        });
-
-        const collections = await collectionDateService.get(garbageId);
-        const garbage = await garbageService.findOne(garbageId);
-        garbage.collections = collections;
-
+        const garbage = await garbageService.collect(req.params.id);
         res.json(garbage);
     } catch (error) {
         next(error)
@@ -115,8 +79,7 @@ const collect = async (req, res, next) => {
 
 const getCollections = async (req, res) => {
     try {
-        const garbageId = req.params.id;
-        const collections = await collectionDateService.get(garbageId);
+        const collections = await garbageService.getCollections(req.params.id);
         res.json(collections);
     } catch (error) {
         next(error)
@@ -125,8 +88,7 @@ const getCollections = async (req, res) => {
 
 const getLatestCollect = async (req, res) => {
     try {
-        const garbageId = req.params.id;
-        const latestCollect = await collectionDateService.getLatest(garbageId);
+        const latestCollect = await garbageService.getLatestCollect(req.params.id);
         res.json(latestCollect);
     } catch (error) {
         next(error)

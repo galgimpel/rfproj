@@ -9,7 +9,7 @@ class MissingMandatoryParameterError400 extends HttpError {
     constructor(args) {
         super(args);
         this.status = 400;
-        this.message = message || `missing mandatory parameter [${param}]`;
+        this.message = args.message || `missing mandatory parameter [${args.param}]`;
     }
 }
 

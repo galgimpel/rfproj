@@ -1,69 +1,73 @@
-const client = require("../core/elasticsearch");
-const validators = require("../utilities/validators");
-const utility = require("../utilities/utility");
-const redis = require("../../redis");
-const errors = require("../core/errors");
+// const client = require("../core/elasticsearch");
+// const validators = require("../utilities/validators");
+// const utility = require("../utilities/utility");
+// const redis = require("../core/redis");
+// const errors = require("../core/errors");
 
-//const client = es.Client({ host: "http://localhost:9200" });
+// //const client = es.Client({ host: "http://localhost:9200" });
 
-const INDEX = "collection-date";
+// const INDEX = "collection-date";
 
-const findOne = async (id) => {
-    if (!id)
-        throw new errors.MissingMandatoryParameterError400();
+// const findOne = async (id) => {
+//     if (!id)
+//         throw new errors.MissingMandatoryParameterError400();
 
-    const collection = await client.get({ index: INDEX, id });
-    return Object.assign(collection._source, { id });
-};
+//     const collection = await client.get({ index: INDEX, id });
+//     return Object.assign(collection._source, { id });
+// };
 
-const create = async (payload) => {
-    validators.includePropValidation(payload, ["garbageId", "at"]);
-    const createdCollection = await client.index({ index: INDEX, body: payload });
-    redis.set(payload.garbageId, createdCollection);
+// const create = async (payload) => {
+//     validators.includePropValidation(payload, ["garbageId", "at"]);
+//     const createdCollection = await client.index({ index: INDEX, body: payload });
+//     redis.set(payload.garbageId, createdCollection);
 
-    return findOne(createdCollection._id);
-};
+//     return findOne(createdCollection._id);
+// };
 
-const get = async (garbageId) => {
-    if (!garbageId)
-        throw new errors.MissingMandatoryParameterError400('garbageId');
+// const getCollections = async (garbageId) => {
 
-    const query = { match: { garbageId } };
-    const collections = await client.search({
-        index: INDEX,
-        body: { query },
-    });
+//     console.log('garbageId');
+//     console.log(garbageId);
 
-    return utility.prepareData(collections);
-};
+//     if (!garbageId)
+//         throw new errors.MissingMandatoryParameterError400('garbageId');
 
-const getLatest = async (garbageId) => {
-    if (!garbageId)
-        throw new errors.MissingMandatoryParameterError400('garbageId');
+//     const query = { match: { garbageId } };
+//     const collections = await client.search({
+//         index: INDEX,
+//         body: { query },
+//     });
 
-    let latestCollect = await redis.get(garbageId);
-    if (latestCollect) return latestCollect;
+//     return utility.prepareData(collections);
+// };
 
-    latestCollect = await client.search({
-        index: INDEX,
-        body: {
-            size: 1,
-            sort: { at: "desc" },
-            query: {
-                match: {
-                    garbageId,
-                },
-            },
-        },
-    });
+// const getLatest = async (garbageId) => {
+//     if (!garbageId)
+//         throw new errors.MissingMandatoryParameterError400('garbageId');
 
-    if (latestCollect) redis.set(garbageId, latestCollect);
+//     let latestCollect = await redis.get(garbageId);
+//     if (latestCollect) return latestCollect;
 
-    return utility.prepareData(latestCollect);
-};
+//     latestCollect = await client.search({
+//         index: INDEX,
+//         body: {
+//             size: 1,
+//             sort: { at: "desc" },
+//             query: {
+//                 match: {
+//                     garbageId,
+//                 },
+//             },
+//         },
+//     });
 
-module.exports = {
-    create,
-    get,
-    getLatest,
-};
+//     if (latestCollect) redis.set(garbageId, latestCollect);
+
+//     return utility.prepareData(latestCollect);
+// };
+
+// module.exports = {
+//     create,
+//     get,
+//     getLatest,
+// };

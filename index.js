@@ -34,3 +34,5 @@ app.get("/status", (req, res) => {
 app.listen(port, () => {
   console.log(` ----> Garbage-can app listening at http://localhost:${port}`);
 });
+
+module.exports = app;
