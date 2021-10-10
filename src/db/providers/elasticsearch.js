@@ -16,7 +16,8 @@ const expr = async (action, { index, id, body }) => {
 
 class elasticsearchProvider {
     async create(payload, { index }) {
-        return expr("index", { index, body: payload });
+        const createdEntity = await expr("index", { index, body: payload });
+        return await this.retrieve(createdEntity._id);
     }
     async retrieveAll({ index, query }, options = {}) {
         const body = {};
@@ -32,9 +33,11 @@ class elasticsearchProvider {
         const result = await expr("search", { index, body });
         return utility.prepareData(result);
     }
-    async retrieve(id, { index }) {
+    async retrieve(id, { index } = {}) {
         console.log('---retrieve',id);
-        return expr("get", { index, id });
+        let options = { id };
+        if(index) options.index = index;
+        return expr("get", options);
     }
     async update(id, payload, { index }) {
         return expr("index", { index, id, body: utility.clearId(payload) });

@@ -7,6 +7,29 @@ const expressWinston = require("express-winston");
 const { loggerOptions } = require('./src/core/logger');
 const port = 3000;
 
+const swaggerUI = require('swagger-ui-express');
+const swaggerJsDoc = require('swagger-jsdoc');
+
+const options = {
+  apis: ['./src/lib/*/routes/*route.js'],
+  //apis: ['./src/lib/garbage/routes/garbage.route.js'],
+  definition: {
+    openapi: "3.0.0",
+    info: {
+      title: "Garbage can API",
+      version: "1.0.0",
+      description: "A simple Express Library API",
+      servers: [
+        { url: `http://localhost:${port}` }
+      ],
+    }
+  }
+}
+
+const specs = swaggerJsDoc(options);
+
+app.use('/api-doc', swaggerUI.serve, swaggerUI.setup(specs));
+
 // parse application/x-www-form-urlencoded
 app.use(bodyParser.urlencoded({ extended: false }));
 

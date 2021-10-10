@@ -2,7 +2,6 @@ const garbageService = require("../service/garbage.service");
 
 const get = async (req, res, next) => {
     try {
-        console.log(req.query);
         const response = await garbageService.get(req.qeury);
         res.json(response);
     } catch (error) {
